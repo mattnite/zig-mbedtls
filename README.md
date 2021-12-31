@@ -1,6 +1,6 @@
 # mbedtls build package
 
-[![build](https://github.com/mattnite/zig-mbedtls/actions/workflows/build.yml/badge.svg)](https://github.com/mattnite/zig-mbedtls/actions/workflows/build.yml)
+[![ci](https://github.com/mattnite/zig-mbedtls/actions/workflows/ci.yml/badge.svg)](https://github.com/mattnite/zig-mbedtls/actions/workflows/ci.yml)
 
 ## Like this project?
 
@@ -15,7 +15,7 @@ This repo contains code for your `build.zig` that can statically compile mbedtls
 In order to statically link mbedtls into your application and access the bindings with a configurable import string:
 
 ```zig
-const zlib = @import("path/to/mbedtls.zig");
+const mbedtls = @import("path/to/mbedtls.zig");
 
 pub fn build(b: *std.build.Builder) void {
     // ...
