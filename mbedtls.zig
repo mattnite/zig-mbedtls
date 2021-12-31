@@ -1,5 +1,6 @@
 const std = @import("std");
 const Builder = std.build.Builder;
+const LibExeObjStep = std.build.LibExeObjStep;
 
 fn root() []const u8 {
     return std.fs.path.dirname(@src().file) orelse ".";
@@ -11,6 +12,37 @@ fn pathJoinRoot(comptime components: []const []const u8) []const u8 {
         ret = ret ++ std.fs.path.sep_str ++ component;
 
     return ret;
+}
+
+pub const include_dir = pathJoinRoot(&.{ "c", "include" });
+const library_include = pathJoinRoot(&.{ "c", "library" });
+
+pub const Library = struct {
+    step: *LibExeObjStep,
+
+    pub fn link(self: Library, other: *LibExeObjStep) void {
+        other.addIncludeDir(include_dir);
+        other.linkLibrary(self.step);
+    }
+};
+
+pub fn create(b: *Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) Library {
+    const ret = b.addStaticLibrary("mbedtls", null);
+    ret.setTarget(target);
+    ret.setBuildMode(mode);
+    ret.addIncludeDir(include_dir);
+    ret.addIncludeDir(library_include);
+
+    // not sure why, but mbedtls has runtime issues when it's not built as
+    // release-small or with the -Os flag, definitely need to figure out what's
+    // going on there
+    ret.addCSourceFiles(srcs, &.{"-Os"});
+    ret.linkLibC();
+
+    if (target.isWindows())
+        ret.linkSystemLibrary("ws2_32");
+
+    return Library{ .step = ret };
 }
 
 const srcs = blk: {
@@ -114,21 +146,3 @@ const srcs = blk: {
     };
     break :blk ret;
 };
-
-pub const include_dir = pathJoinRoot(&.{ "c", "include" });
-const library_include = pathJoinRoot(&.{ "c", "library" });
-
-pub fn create(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
-    const ret = b.addStaticLibrary("mbedtls", null);
-    ret.setTarget(target);
-    ret.setBuildMode(mode);
-    ret.addIncludeDir(include_dir);
-    ret.addIncludeDir(library_include);
-    ret.addCSourceFiles(srcs, &.{"-Os"});
-    ret.linkLibC();
-
-    if (target.isWindows())
-        ret.linkSystemLibrary("ws2_32");
-
-    return ret;
-}

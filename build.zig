@@ -6,5 +6,5 @@ pub fn build(b: *std.build.Builder) void {
     const mode = b.standardReleaseOptions();
 
     const lib = mbedtls.create(b, target, mode);
-    lib.install();
+    lib.step.install();
 }
