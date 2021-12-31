@@ -23,6 +23,6 @@ pub fn build(b: *std.build.Builder) void {
     const lib = mbedtls.create(b, target, mode);
 
     const exe = b.addExecutable("my-program", "src/main.zig");
-    lib.link(exe, .{});
+    lib.link(exe);
 }
 ```
