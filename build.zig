@@ -9,7 +9,7 @@ pub fn build(b: *std.build.Builder) void {
     lib.step.install();
 
     const selftest = b.addExecutable("selftest", null);
-    selftest.addCSourceFile("c/programs/test/selftest.c", &.{});
+    selftest.addCSourceFile("mbedtls/programs/test/selftest.c", &.{});
     selftest.defineCMacro("MBEDTLS_SELF_TEST", null);
     lib.link(selftest);
 
