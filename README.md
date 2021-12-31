@@ -12,7 +12,7 @@ This repo contains code for your `build.zig` that can statically compile mbedtls
 
 ### Link to your application
 
-In order to statically link mbedtls into your application and access the bindings with a configurable import string:
+In order to statically link mbedtls into your application:
 
 ```zig
 const mbedtls = @import("path/to/mbedtls.zig");
