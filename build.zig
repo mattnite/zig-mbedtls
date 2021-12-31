@@ -7,4 +7,14 @@ pub fn build(b: *std.build.Builder) void {
 
     const lib = mbedtls.create(b, target, mode);
     lib.step.install();
+
+    const selftest = b.addExecutable("selftest", null);
+    selftest.addCSourceFile("c/programs/test/selftest.c", &.{});
+    selftest.defineCMacro("MBEDTLS_SELF_TEST", null);
+    lib.link(selftest);
+
+    const run_selftest = selftest.run();
+    run_selftest.step.dependOn(&selftest.step);
+    const test_step = b.step("test", "Run mbedtls selftest");
+    test_step.dependOn(&run_selftest.step);
 }
