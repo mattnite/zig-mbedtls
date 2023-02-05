@@ -3,12 +3,12 @@ const mbedtls = @import("mbedtls.zig");
 
 pub fn build(b: *std.build.Builder) void {
     const target = b.standardTargetOptions(.{});
-    const mode = b.standardReleaseOptions();
+    const optimize = b.standardOptimizeOption(.{});
 
-    const lib = mbedtls.create(b, target, mode);
+    const lib = mbedtls.create(b, target, optimize);
     lib.step.install();
 
-    const selftest = b.addExecutable("selftest", null);
+    const selftest = b.addExecutable(.{.name = "selftest"});
     selftest.addCSourceFile("mbedtls/programs/test/selftest.c", &.{});
     selftest.defineCMacro("MBEDTLS_SELF_TEST", null);
     lib.link(selftest);
