@@ -20,9 +20,14 @@ const mbedtls = @import("path/to/mbedtls.zig");
 pub fn build(b: *std.build.Builder) void {
     // ...
 
-    const lib = mbedtls.create(b, target, mode);
+    const lib = mbedtls.create(b, target, optimize);
 
-    const exe = b.addExecutable("my-program", "src/main.zig");
+    const exe = b.addExecutable(.{
+        .name = "my-program",
+        .root_source_file = .{ .path = "src/main.zig" },
+        .target = target,
+        .optimize = optimize,
+    });
     lib.link(exe);
 }
 ```
