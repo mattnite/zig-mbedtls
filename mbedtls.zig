@@ -1,11 +1,11 @@
 const std = @import("std");
 const Builder = std.build.Builder;
-const LibExeObjStep = std.build.LibExeObjStep;
+const CompileStep = std.build.CompileStep;
 
 pub const Library = struct {
-    step: *LibExeObjStep,
+    step: *CompileStep,
 
-    pub fn link(self: Library, other: *LibExeObjStep) void {
+    pub fn link(self: Library, other: *CompileStep) void {
         other.addIncludePath(include_dir);
         other.linkLibrary(self.step);
     }
@@ -19,10 +19,12 @@ const root_path = root() ++ "/";
 pub const include_dir = root_path ++ "mbedtls/include";
 const library_include = root_path ++ "mbedtls/library";
 
-pub fn create(b: *Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) Library {
-    const ret = b.addStaticLibrary("mbedtls", null);
-    ret.setTarget(target);
-    ret.setBuildMode(mode);
+pub fn create(b: *Builder, target: std.zig.CrossTarget, optimize: std.builtin.OptimizeMode) Library {
+    const ret = b.addStaticLibrary(.{
+        .name = "mbedtls",
+        .target = target,
+        .optimize = optimize,
+    });
     ret.addIncludePath(include_dir);
     ret.addIncludePath(library_include);
 
